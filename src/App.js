@@ -1,23 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from "react";
 
 function App() {
+  const [items,setItems] = useState([]);
+  const [ searchTerm, setSearchTerm ] = useState("");
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const response = await fetch("https://fakestoreapi.com/products");
+        const data = await response.json();
+          setItems(data);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    fetchItems();
+  }, [])
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <input type="text" placeholder='Search' onChange={e => {setSearchTerm(e.target.value)}} />
+      <ul>
+        {items.filter((val) =>{
+    if (searchTerm === "") {
+      return val;
+    } else if (val.title.toLowerCase().includes(searchTerm.toLowerCase())) {
+      return val;
+    }
+  }).map(item => (
+          <p key={item.id}>
+            {item.title}
+          </p>
+        ))}
+      </ul>
+      
     </div>
   );
 }
